@@ -5,7 +5,12 @@ from sys import exit
 from NumberClass import NumberRect, update_rectangles, draw_all
 from SortAlg import bubble_sort_gen, quick_sort_gen, merge_sort_gen
 
-SIM_SIZE = 100
+speed_dir={"slow":30,"medium":60,"fast":90, "ultra-fast":150}
+
+SIM_SIZE =80
+SPEED="medium" #input here "slow", "medium","fast" or "ultra-fast"
+
+
 
 #pygame init
 pygame.init()
@@ -33,7 +38,7 @@ rectWidth = 10
 y = 380
 for i in range(3):
     rectangles = []
-    x = 0
+    x = 210
     for num in AlgNumArr[i]:
         min_num = -SIM_SIZE // 2
         max_num = SIM_SIZE // 2 - 1
@@ -43,7 +48,7 @@ for i in range(3):
         newRect = NumberRect(x, y - height, rectWidth, height)
         newRect.setNumber(num)
         rectangles.append(newRect)
-        x += rectWidth + 5
+        x += rectWidth + 7
     AlgorithmsRectangles.append(rectangles)
     y += 333
 
@@ -52,6 +57,9 @@ bubble_gen = bubble_sort_gen(AlgNumArr[0])
 quick_gen = quick_sort_gen(AlgNumArr[1])
 merge_gen = merge_sort_gen(AlgNumArr[2])
 
+colours=[pygame.Color(0, 235, 0),pygame.Color(255, 251, 0),pygame.Color(255, 0, 0)] #colors of rects of algorithms depending on speed (fastest to end is green, second yellow , etc)
+c=0
+HadChanged=[False, False, False]
 # main loop
 while True:
     for event in pygame.event.get():
@@ -65,30 +73,45 @@ while True:
         current_state = next(bubble_gen)
         update_rectangles(AlgorithmsRectangles[0], current_state, base_y=380, height_ratio=3.0)
     except StopIteration:
-        pass
+        if (HadChanged[0]!=True):
+            for rect in AlgorithmsRectangles[0]:
+                rect.setColor(colours[c])
+            HadChanged[0] = True
+            c+=1
 
+        pass
     try:
         current_state = next(quick_gen)
-        update_rectangles(AlgorithmsRectangles[1], current_state, base_y=630, height_ratio=3.0)
+        update_rectangles(AlgorithmsRectangles[1], current_state, base_y=650, height_ratio=3.0)
     except StopIteration:
+        if (HadChanged[1] != True):
+            for rect in AlgorithmsRectangles[1]:
+                rect.setColor(colours[c])
+            HadChanged[1] = True
+            c += 1
         pass
 
     try:
         current_state = next(merge_gen)
-        update_rectangles(AlgorithmsRectangles[2], current_state, base_y=960, height_ratio=3.0)
+        update_rectangles(AlgorithmsRectangles[2], current_state, base_y=940, height_ratio=3.0)
     except StopIteration:
+        if (HadChanged[2] != True):
+            for rect in AlgorithmsRectangles[2]:
+                rect.setColor(colours[c])
+            HadChanged[2] = True
+            c += 1
         pass
 
     draw_all(window, AlgorithmsRectangles)
 
-    x=1550
-    y=[300, 550,900]
+    x=1590
+    y=[300, 550,900] #y positions of 1 text ("bubble sort"), seconds etc
     i=0
     for text in text_surfaces:
         window.blit(text,(x,y[i]))
         i+=1
 
     pygame.display.update()
-    clock.tick(60)
+    clock.tick(speed_dir[SPEED])
 
 
